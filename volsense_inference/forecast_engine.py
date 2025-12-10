@@ -93,6 +93,7 @@ class Forecast:
         model_version: str = "v109",
         checkpoints_dir: str = "models",
         start: str = "2005-01-01",
+        end: str = None,        #adds end date param
     ):
         """
         Initialize the Forecast runtime by loading pretrained assets.
@@ -108,6 +109,7 @@ class Forecast:
         self.model_version = model_version
         self.checkpoints_dir = checkpoints_dir
         self.start = start
+        self.end = end #adds end date param
 
         # Load model and assets
         self.model, self.meta, self.scalers, self.ticker_to_id, self.features = (
@@ -150,7 +152,11 @@ class Forecast:
         :return: Recent feature DataFrame used for inference.
         :rtype: pandas.DataFrame
         """
-        end_date = datetime.today().date()
+        end_date = (
+        datetime.strptime(self.end, "%Y-%m-%d").date()
+        if self.end is not None
+        else datetime.today().date()
+        ) #adds end date param
         # Increased to 200 days to ensure sufficient data for VolNetX (65-day window + 60-day rolling features)
         start_date = (end_date - timedelta(days=200)).strftime("%Y-%m-%d")
         
